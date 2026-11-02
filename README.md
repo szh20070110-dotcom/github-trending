@@ -1,4 +1,4 @@
-﻿# GitHub 热门日报
+# GitHub 热门日报
 
 ![日报页面](resources/report.png)
 
@@ -63,8 +63,8 @@ report/YYYY-MM-DD.md    # Top 10 中文日报，按今日新增星数排序
 2. 右侧点击“创建基本任务”，名称填 `GitHubTrendingDaily`。
 3. 触发器选“每天”，时间填 `09:00`。
 4. 操作选“启动程序”：
-   - 程序或脚本：`C:\Users\szh\Desktop\你还爱队不队\github-trending\run-daily.cmd`
-   - 起始于：`C:\Users\szh\Desktop\你还爱队不队\github-trending`
+   - 程序或脚本：`C:\Users\szh\Desktop\你还爱她对不队\github-trending\run-daily.cmd`
+   - 起始于：`C:\Users\szh\Desktop\你还爱她对不队\github-trending`
 5. 完成后在任务上右键“运行”测试一次，查看 `logs/daily.log`。
 6. 建议在任务“属性”里：
    - “常规”勾选“不管用户是否登录都要运行”（需要输入当前用户密码）；
@@ -73,7 +73,7 @@ report/YYYY-MM-DD.md    # Top 10 中文日报，按今日新增星数排序
 ### 方式二：命令行（管理员 CMD）
 
 ```bat
-schtasks /Create /TN "GitHubTrendingDaily" /TR "C:\Users\szh\Desktop\你还爱队不队\github-trending\run-daily.cmd" /SC DAILY /ST 09:00 /F
+schtasks /Create /TN "GitHubTrendingDaily" /TR "C:\Users\szh\Desktop\你还爱她对不队\github-trending\run-daily.cmd" /SC DAILY /ST 09:00 /F
 ```
 
 手动触发一次：
