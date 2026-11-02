@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -255,15 +255,18 @@ async function main() {
   const fetchedAt = formatDateTime(now);
 
   console.log(`抓取 ${SOURCE_URL} …`);
-  const html = await fetchHtml(SOURCE_URL);
-  const repositories = parseTrending(html)
-    .map((repository, index) => ({ pageRank: index + 1, ...repository }))
-    .sort((a, b) => b.starsToday - a.starsToday)
-    .map((repository, index) => ({
-      rank: index + 1,
-      ...repository,
-      comment: buildComment(repository, index + 1),
-    }));
+  let html = '';
+  let offline = false;
+  try {
+    html = await fetchHtml(SOURCE_URL);
+  } catch (error) {
+    offline = true;
+    console.warn(`在线抓取失败（${error.message}），改用上次缓存 data/trending.json`);
+  }
+  const cached = offline
+    ? JSON.parse(await readFile(join(ROOT, 'data', 'trending.json'), 'utf8'))
+    : null;
+  const repositories = (offline ? (cached.repositories || []) : parseTrending(html))
 
   if (repositories.length === 0) {
     throw new Error('页面结构可能已变化，未能解析出任何仓库');
@@ -285,7 +288,9 @@ async function main() {
   const markdownPath = join(ROOT, 'report', `${date}.md`);
 
   await writeFile(jsonPath, `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
-  await writeFile(markdownPath, buildMarkdown(repositories, date, fetchedAt), 'utf8');
+  let markdown = buildMarkdown(repositories, date, fetchedAt);
+  if (offline) markdown = '> 本次实时抓取失败，以下为上次成功缓存的榜单（' + cached.fetchedAt + '）\n\n' + markdown;
+  await writeFile(markdownPath, markdown, 'utf8');
 
   console.log(`已写入 ${jsonPath}`);
   console.log(`已写入 ${markdownPath}`);
